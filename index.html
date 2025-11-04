@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conteo de Palabras con MapReduce</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 2rem;
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      background-clip: text; /* Propiedad estándar */
+      -webkit-background-clip: text; /* Compatibilidad WebKit */
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 800px;
+      height: 150px;
+      margin: 20px 0;
+      padding: 15px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      resize: none;
+      box-shadow: 0 0 15px rgba(0, 114, 255, 0.2);
+    }
+
+    button {
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 114, 255, 0.5);
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 114, 255, 0.8);
+    }
+
+    .result {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 800px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.8s ease;
+    }
+
+    .word {
+      display: inline-block;
+      background: rgba(0, 114, 255, 0.2);
+      color: #fff;
+      padding: 6px 12px;
+      margin: 5px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: background 0.3s;
+    }
+
+    .word:hover {
+      background: rgba(0, 114, 255, 0.4);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧠 Conteo de Palabras con MapReduce</h1>
+
+  <textarea id="texto">
+
+  </textarea>
+
+  <button onclick="mapReduce()">Procesar</button>
+
+  <div id="resultado" class="result"></div>
+
+  <footer>Desarrollado con Huguito</footer>
+
+  <script>
+    function mapReduce() {
+      const texto = document.getElementById("texto").value.toLowerCase();
+
+      // === MAP ===
+      const palabras = texto
+        .replace(/[.,;:¡!¿?"()]/g, "")
+        .split(/\s+/)
+        .filter(p => p.length > 0);
+
+      const mapeo = palabras.map(p => [p, 1]);
+
+      // === REDUCE ===
+      const reduccion = mapeo.reduce((acc, [palabra, valor]) => {
+        acc[palabra] = (acc[palabra] || 0) + valor;
+        return acc;
+      }, {});
+
+      // === ORDENAR ===
+      const resultadoOrdenado = Object.entries(reduccion)
+        .sort((a, b) => b[1] - a[1]);
+
+      // === MOSTRAR ===
+      const contenedor = document.getElementById("resultado");
+      contenedor.innerHTML = "<h2> Resultados del Conteo:</h2>" +
+        resultadoOrdenado
+          .map(([palabra, conteo]) =>
+            `<span class="word"><strong>${palabra}</strong>: ${conteo}</span>`)
+          .join(" ");
+    }
+  </script>
+</body>
+</html>
